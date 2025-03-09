@@ -31,7 +31,7 @@
 ``` function commitChoice(uint choice) public {
         require(numPlayer == 2, "Only 2 players naa");
         require(player_not_played[msg.sender], "You have already committed");
-        require(choice >= 0 && choice <= 4, "Invalid choice ja");
+        require(choice >= 0 && choice <= 4, "Invalid choice ja"); //จำกัดให้ผู้เล่นใส่ช้อยตามช้อยที่มี
         bytes32 commitment = keccak256(abi.encodePacked(choice));
         player_choice_hash[msg.sender] = commitment;
         player_not_played[msg.sender] = false;
