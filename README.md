@@ -29,16 +29,27 @@
 ![Screenshot 2025-03-08 045558](https://github.com/user-attachments/assets/74e235b9-8c6c-47ab-8e08-976c54821892)
 
 ``` function commitChoice(uint choice) public {
-        require(numPlayer == 2, "Only 2 players naa");
-        require(player_not_played[msg.sender], "You have already committed");
-        require(choice >= 0 && choice <= 4, "Invalid choice ja"); //จำกัดให้ผู้เล่นใส่ช้อยตามช้อยที่มี
-        bytes32 commitment = keccak256(abi.encodePacked(choice));
-        player_choice_hash[msg.sender] = commitment;
-        player_not_played[msg.sender] = false;
-        numInput++;
+        require(numPlayer == 2, "Only 2 players naa"); //เช็กจำนวนผู้เล่นจะต้องมี 2 คน 
+        require(player_not_played[msg.sender], "You have already committed"); // กำหนดว่าผู้เล่นต้อง คอมมิทตัวเลือกไปแล้วเท่านั้น
+        require(choice >= 0 && choice <= 4, "Invalid choice ja"); //จำกัดให้ผู้เล่นใส่ช้อยตามตัวเลือกที่มี
+        bytes32 commitment = keccak256(abi.encodePacked(choice)); //ใช้ keccak256 เพื่อสร้างแฮชของตัวเลือกที่เลือก เพื่อไม่ให้คู่แข่งรู้จนกว่าจะถึงช การทำ revealChoice
+        player_choice_hash[msg.sender] = commitment; //บันทึกแฮชของตัวเลือกลงใน mapping player_choice_hash
+        player_not_played[msg.sender] = false;  //เปลี่ยนสถานขอองผู้เล่น
+        numInput++; //เพิ่มจำนวนอินพุต
     }
 ```
+**การเปิดเผย**
+```function revealChoice(uint choice) public {
+        require(numInput == 2); //เช็กว่าทั้ง 2 คนได้ทำการคอมมิทคำตอบเรียบร้อยหรือยัง
+        require(choice >= 0 && choice <= 4, "Invalid choice ja"); // เช็กตัวเลือกอยู่ในตช้อยส์หรือไม่
+        require(keccak256(abi.encodePacked(choice)) == player_choice_hash[msg.sender], "Invalid reveal"); // ใช้ keccak256 เพื่อแฮช choice ที่ผู้เล่นกำลังเปิดเผย เพื่อทำการเปรียบเทียบแฮชนี้กับค่าแฮชที่ถูกบันทึกไว้ก่อนหน้านี้ ใน player_choice_hash[msg.sender] ถ้าไม่ตรงกัน จะ Invalid reveal
 
+        revealedChoices[msg.sender] = choice; // บันทึกตัวเลือกที่เปิดเผย
+        if (revealedChoices[players[0]] > 0 && revealedChoices[players[1]] > 0) {  //ตรวจสอบว่าเปิดคำตอบครบหรือยัง
+            _checkWinnerAndPay();   // เรียกใช้ฟังก์ชันตัดสิน
+        }
+    }
+```
 
 
     
