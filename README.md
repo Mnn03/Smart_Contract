@@ -24,6 +24,10 @@
 
     
 ## ทำการซ่อน choice และ commit
+![Screenshot 2025-03-08 045739](https://github.com/user-attachments/assets/1b4a550f-3eae-401b-9520-3b8eb51d0c09)
+## นำค่า byte32 ไปใช้ใน Convert ทำการ getHash ไปใช้ 
+![Screenshot 2025-03-08 045558](https://github.com/user-attachments/assets/74e235b9-8c6c-47ab-8e08-976c54821892)
+
 ``` function commitChoice(uint choice) public {
         require(numPlayer == 2, "Only 2 players naa");
         require(player_not_played[msg.sender], "You have already committed");
@@ -52,13 +56,14 @@
 
     
 ## ทำการ reveal และนำ choice มาตัดสินผู้ชนะ
+![Screenshot 2025-03-08 050100](https://github.com/user-attachments/assets/c060c5c2-5085-44d6-b483-22b461f5ea68)
 ``` function revealChoice(uint choice) public {
-        require(numInput == 2, "Both players must commit first");
-        require(choice >= 0 && choice <= 4, "Invalid choice ja");
-        require(keccak256(abi.encodePacked(choice)) == player_choice_hash[msg.sender], "Invalid reveal");
-        revealedChoices[msg.sender] = choice;
-        if (revealedChoices[players[0]] > 0 && revealedChoices[players[1]] > 0) {
-            _checkWinnerAndPay();
+        require(numInput == 2, "Both players must commit first"); //เช็กว่าทั้ง 2 ผู้เล่นทำการคอมมิทมาเรียบร้อยแล้ว
+        require(choice >= 0 && choice <= 4, "Invalid choice ja"); //เช็กคำตอบหากไม่อยู่ในตัวเลืือก
+        require(keccak256(abi.encodePacked(choice)) == player_choice_hash[msg.sender], "Invalid reveal"); //นำ choice ที่ผู้เล่นส่งเข้ามาไปทำ Keccak256 Hash เพื่อเปรียบเทียบกับค่า Hash ที่เก็บไว้ใน player_choice_hash[msg.sender]
+        revealedChoices[msg.sender] = choice; //บันทึกค่า
+        if (revealedChoices[players[0]] > 0 && revealedChoices[players[1]] > 0) {  // ตรวจสอบว่าทั้ง 2 ผู้เล่นทำการเปิดตัวเลือกแล้ว
+            _checkWinnerAndPay(); // หาผู้ชนะ
         }
     }
 ```
