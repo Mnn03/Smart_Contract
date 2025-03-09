@@ -15,8 +15,8 @@ contract RPS is CommitReveal {
     uint public numInput = 0;
     address public owner;
     uint public startTime;
-    uint public gameTimeout = 2 minutes;
-    uint public waitingTime = 5 minutes;
+    uint public gameTimeout = 1 minutes;
+    uint public waitingTime = 2 minutes;
     constructor() {
         owner = msg.sender;
 
@@ -57,7 +57,7 @@ contract RPS is CommitReveal {
     }
 
     function revealChoice(uint choice) public {
-        require(numInput == 2, "Both players must commit first");
+        require(numInput == 2);
         require(choice >= 0 && choice <= 4, "Invalid choice ja");
         require(keccak256(abi.encodePacked(choice)) == player_choice_hash[msg.sender], "Invalid reveal");
 
